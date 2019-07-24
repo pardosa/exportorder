@@ -20,7 +20,22 @@ class Command extends SymfonyCommand
 	
 	protected function convertJSON(InputInterface $input, OutputInterface $output)
     {
-        // Download JSON File
+		// $transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465))
+		// ->setUsername('sipipin123@gmail.com')
+		// ->setPassword('Merdeka123!')
+		// ;
+		// $mailer = new \Swift_Mailer($transport);
+		// $message = (new \Swift_Message('Wonderful Subject'))
+		// 	->setFrom(['john@doe.com' => 'John Doe'])
+		// 	->setTo(['sipipin123@gmail.com', '' => ''])
+		// 	->setBody('Here is the message itself')
+		// 	;
+		
+		// $result = $mailer->send($message);
+
+		var_dump($this->getContainer());die;
+
+		// Download JSON File
 		$this->getJSONFile();
 		
 		// JSON to CSV
@@ -52,26 +67,30 @@ class Command extends SymfonyCommand
 		$f = fopen($csvFilePath,'w+');
 		while(($json = fgets($jsonFile)) !== false) {
 			$array = json_decode($json, true);
-			$order = new Order($array["order_id"], $array["order_date"], $array["discounts"], $array["shipping_price"], $array["items"]);
-			$order->setCustomer($array["customer"]);
-			
-			if (!$firstLineKeys)
-			{
-				$firstLineKeys = ["order_id", "order_datetime", "total_order_value", "average_unit_price", "distinct_unit_count", "total_units_count", "customer_state"];
-				fputcsv($f, $firstLineKeys);
-				$firstLineKeys = true; 
-			}
-			
-			$arraycsv = [];
-			$arraycsv[] = $order->getOrderId();
-			$arraycsv[] = $order->getOrderDate();
-			$arraycsv[] = $order->getTotalOrderValue();
-			$arraycsv[] = $order->getAvarageUnitPrice();
-			$arraycsv[] = $order->countDistinctUnit();
-			$arraycsv[] = $order->getTotalUnit();
-			$arraycsv[] = $order->getCustomer()->getShippingState();
 
-			fputcsv($f, $arraycsv);
+			//Exclude order with 0 items ()
+			if (count($array["items"] > 0)){
+				$order = new Order($array["order_id"], $array["order_date"], $array["discounts"], $array["shipping_price"], $array["items"]);
+				$order->setCustomer($array["customer"]);
+				
+				if (!$firstLineKeys)
+				{
+					$firstLineKeys = ["order_id", "order_datetime", "total_order_value", "average_unit_price", "distinct_unit_count", "total_units_count", "customer_state"];
+					fputcsv($f, $firstLineKeys);
+					$firstLineKeys = true; 
+				}
+				
+				$arraycsv = [];
+				$arraycsv[] = $order->getOrderId();
+				$arraycsv[] = $order->getOrderDate();
+				$arraycsv[] = $order->getTotalOrderValue();
+				$arraycsv[] = $order->getAvarageUnitPrice();
+				$arraycsv[] = $order->countDistinctUnit();
+				$arraycsv[] = $order->getTotalUnit();
+				$arraycsv[] = $order->getCustomer()->getShippingState();
+
+				fputcsv($f, $arraycsv);
+			}
 			
 	 	}
 	 	fclose($f);
