@@ -5,7 +5,7 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use Src\Convert;
+use App\Convert;
 
 /**
 * Author: Harry P <harry2604@gmail.com>

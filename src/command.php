@@ -1,4 +1,4 @@
-<?php namespace Src;
+<?php namespace App;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use OzdemirBurak\JsonCsv\File\Json;
 use Symfony\Component\Filesystem\Filesystem;
 
-use Src\Entity\Order;
+use App\Entity\Order;
 
 class Command extends SymfonyCommand
 {
@@ -53,6 +53,7 @@ class Command extends SymfonyCommand
 		while(($json = fgets($jsonFile)) !== false) {
 			$array = json_decode($json, true);
 			$order = new Order($array["order_id"], $array["order_date"], $array["discounts"], $array["shipping_price"], $array["items"]);
+			$order->setCustomer($array["customer"]);
 			
 			if (!$firstLineKeys)
 			{
@@ -68,6 +69,7 @@ class Command extends SymfonyCommand
 			$arraycsv[] = $order->getAvarageUnitPrice();
 			$arraycsv[] = $order->countDistinctUnit();
 			$arraycsv[] = $order->getTotalUnit();
+			$arraycsv[] = $order->getCustomer()->getShippingState();
 
 			fputcsv($f, $arraycsv);
 			

@@ -1,4 +1,4 @@
-<?php namespace Src\Entity; 
+<?php namespace App\Entity; 
 
 Class Order {
 
@@ -9,6 +9,7 @@ Class Order {
     private $total_order_value;
     private $items;
     private $total_unit;
+    private $customer;
 
     public function __construct($order_id, $order_date, $discounts, $shipping_price, $items)
     {
@@ -16,8 +17,21 @@ Class Order {
         $this->order_date = $order_date;
         $this->discounts = $discounts;
         $this->shipping_price = $shipping_price;
-        $this->items = $items;
+        $this->items = $items;        
+    }
+
+    public function setCustomer($customer) {
         
+        $this->customer = new Customer($customer["customer_id"], $customer["first_name"], $customer["last_name"], $customer["email"], $customer["phone"]);
+        $this->customer->setShippingAddress($customer["shipping_address"]);
+    }
+
+    public function getCustomer() {
+        if ($this->customer === null) {
+            $this->customer = new Customer;
+        }
+
+        return $this->customer;
     }
 
     public function getOrderId(){
